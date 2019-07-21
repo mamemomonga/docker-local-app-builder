@@ -2,5 +2,7 @@
 set -eux
 source config
 docker pull $IMAGE_NAME
-exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" > $APP_NAME.tar
+
+mkdir -p var
+exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" > var/$APP_NAME-$MISSKEY_VERSION-$OS-$ARCH.tar
 

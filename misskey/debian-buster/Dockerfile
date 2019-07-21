@@ -9,29 +9,19 @@ RUN set -xe && \
 	export DEBIAN_FRONTEND=noninteractive && \
 	apt-get update && \
 	apt-get install -y --no-install-recommends \
-		python-dev build-essential zlib1g-dev autoconf && \
+		curl wget git ca-certificates \
+		python-dev build-essential zlib1g-dev autoconf automake && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN set -xe && \
 	find /usr/bin | perl -E '$ct=1; while(<>) { chomp; if (m#python\d\.\d$#) { say "update-alternatives --install /usr/bin/python python $_ $ct"; $ct++}}' | sh -xe && \
 	update-alternatives --set python /usr/bin/python2.7
 
-# NODEJSのバージョン
-# https://nodejs.org/en/download/current
-ENV NODEJS_VERSION=12.6.0
-
 RUN set -xe && \
 	useradd -m -s /bin/bash misskey
-
-RUN set -xe && \
-	export DEBIAN_FRONTEND=noninteractive && \
-	apt-get update && \
-	apt-get install -y --no-install-recommends \
-		curl wget git ca-certificates && \
-	rm -rf /var/lib/apt/lists/*
-
 USER misskey
 
+ARG NODEJS_VERSION
 RUN set -xe && \
 	case "$(uname -m)" in \
 		"x86_64" )  NODEJS_ARCH="x64" ;; \
@@ -47,10 +37,7 @@ RUN set -xe && \
 
 ENV PATH=/home/misskey/.nodejs/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# MISSKEYのバージョン
-# https://github.com/syuilo/misskey/releases
-ENV MISSKEY_VERSION=11.26.1
-
+ARG MISSKEY_VERSION
 RUN set -xe && \
 	cd /home/misskey && \
 	git clone git://github.com/syuilo/misskey.git && \
@@ -61,7 +48,12 @@ RUN set -xe && \
 	if [ "$(uname -m)" = "aarch64" ]; then export CPPFLAGS="-DPNG_ARM_NEON_OPT=0"; fi && \
 	export NODE_ENV=production && \
 	cd /home/misskey/misskey && \
-	npm install && \
+	npm install
+
+RUN set -xe && \
+	if [ "$(uname -m)" = "aarch64" ]; then export CPPFLAGS="-DPNG_ARM_NEON_OPT=0"; fi && \
+	export NODE_ENV=production && \
+	cd /home/misskey/misskey && \
 	npm run build
 
 USER root

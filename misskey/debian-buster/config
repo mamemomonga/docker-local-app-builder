@@ -1,4 +1,14 @@
 OS=debian-buster
 ARCH=$(uname -m)
-IMAGE_NAME=mamemomonga/local-app-builder:$NAME-$OS-$ARCH
+
+# NODEJSのバージョン
+# https://nodejs.org/en/download/current
+NODEJS_VERSION=12.6.0
+
+# MISSKEYのバージョン
+# https://github.com/syuilo/misskey/releases
+MISSKEY_VERSION=11.26.1
+
 APP_NAME="misskey"
+IMAGE_NAME=mamemomonga/local-app-builder:$APP_NAME-$MISSKEY_VERSION-$OS-$ARCH
+
