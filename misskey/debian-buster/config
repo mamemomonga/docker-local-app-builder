@@ -1,0 +1,4 @@
+OS=debian-buster
+ARCH=$(uname -m)
+IMAGE_NAME=mamemomonga/local-app-builder:$OS-$ARCH
+APP_NAME="misskey"
