@@ -3,7 +3,7 @@ ARCH=$(uname -m)
 
 # NODEJSのバージョン
 # https://nodejs.org/en/download/current
-NODEJS_VERSION=10.16.0
+NODEJS_VERSION=8.15.0
 
 # Mastodonのバージョン
 MASTODON_VERSION=2.9.2

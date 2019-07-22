@@ -3,7 +3,6 @@ set -eu
 BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $BASEDIR/config
 
-COMMANDS="build push pull fetch setup"
 
 do_build() {
 	exec docker build \
@@ -33,6 +32,12 @@ do_setup() {
 	fi
 	exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" | ssh $dest tar xvpC /home/mastodon
 }
+
+do_shell() {
+	exec docker run --rm -it $IMAGE_NAME sh
+}
+
+COMMANDS="build push pull fetch setup shell"
 
 run() {
     for i in $COMMANDS; do

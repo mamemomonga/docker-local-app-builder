@@ -24,8 +24,8 @@ RUN set -xe && \
 USER mastodon
 
 RUN set -xe && \
-	echo "$PATH" > $HOME/path && \
-	echo 'export PATH="$(cat $HOME/path)"' > $HOME/prerun
+	echo "$PATH" > $HOME/.path && \
+	echo 'export PATH="$(cat $HOME/.path)"' > $HOME/prerun
 
 ARG NODEJS_VERSION
 RUN set -xe && \
@@ -40,20 +40,20 @@ RUN set -xe && \
 	curl -o /tmp/nodejs.tar.xz -L -s $NODEJS_URL && \
 	tar JxC $HOME/.nodejs --strip 1 -f /tmp/nodejs.tar.xz && \
 	rm -f /tmp/nodejs.tar.xz && \
-	echo "$HOME/.nodejs/bin:$PATH" > $HOME/path && \
+	echo "$HOME/.nodejs/bin:$PATH" > $HOME/.path && \
 
-	export PATH="$(cat $HOME/path)" && \
+	export PATH="$(cat $HOME/.path)" && \
 	cp $HOME/.bashrc $HOME/.bashrc.bak && \
 	curl -o- -L https://yarnpkg.com/install.sh | bash || true && \
 	cp $HOME/.bashrc.bak $HOME/.bashrc && rm -f $HOME/.bashrc.bak && \
-	echo "$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" > $HOME/path
+	echo "$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" > $HOME/.path
 
 ARG RUBY_VERSION
 RUN set -xe && \
 	eval "$(cat $HOME/prerun)" && cd && \
 	git clone https://github.com/rbenv/rbenv.git ~/.rbenv && \
 	cd ~/.rbenv && src/configure && make -C src && \
-	echo "$HOME/.rbenv/bin:$PATH" > $HOME/path && \
+	echo "$HOME/.rbenv/bin:$PATH" > $HOME/.path && \
 	echo 'eval "$(rbenv init -)"' >> $HOME/prerun
 
 RUN set -xe && \
