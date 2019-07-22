@@ -1,0 +1,16 @@
+OS=debian-buster
+ARCH=$(uname -m)
+
+# NODEJSのバージョン
+# https://nodejs.org/en/download/current
+NODEJS_VERSION=10.16.0
+
+# Mastodonのバージョン
+MASTODON_VERSION=2.9.2
+
+# Rubyのバージョン
+RUBY_VERSION=2.6.1
+
+APP_NAME="mastodon"
+IMAGE_NAME=mamemomonga/local-app-builder:$APP_NAME-$MASTODON_VERSION-$OS-$ARCH
+
