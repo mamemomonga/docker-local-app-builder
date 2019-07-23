@@ -82,6 +82,16 @@ RUN set -xe && \
 	curl -o- -L https://yarnpkg.com/install.sh | bash || true && \
 	echo "$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH" > $HOME/.path/03yarn
 
+RUN set -xe && \
+	eval "$(cat $HOME/.prerun)" && cd && \
+	git clone --depth=1 https://github.com/ClusterWS/cWS.git && \
+	cd cWS && \
+	rm -rf dist && \
+	mkdir dist && \
+	mkdir targets && \
+	curl https://nodejs.org/dist/v8.12.0/node-v8.12.0-headers.tar.gz | tar xz -C targets && \
+	NODE=targets/node-v8.12.0 ABI=57 make Linux
+
 FROM build-dep
 USER mastodon
 COPY --from=ruby   --chown=mastodon:mastodon /home/mastodon/.ruby   /home/mastodon/.ruby
@@ -104,16 +114,10 @@ RUN set -xe && \
 	cd /home/mastodon/live && \
 	OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder bundle exec rails assets:precompile && \
 	yarn cache clean
-# 
-# RUN set -xe && \
-# 	cat $HOME/prerun >> $HOME/.bashrc && \
-# 	rm -f $HOME/prerun
-# 
-# USER root
-# 
-# RUN set -xe && \
-# 	tar cC /home/mastodon -f /mastodon.tar .
-# 
-# FROM busybox
-# COPY --from=build-dep /mastodon.tar /mastodon.tar
+
+RUN set -xe rm -rf /home/mastodon/live/node_modules/@clusterws/cws/dist
+COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/cWS/dist /home/mastodon/live/node_modules/@clusterws/cws/dist
+
+ADD entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 
