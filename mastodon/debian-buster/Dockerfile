@@ -100,7 +100,11 @@ COPY --from=ruby   --chown=mastodon:mastodon /home/mastodon/.path   /home/mastod
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.nodejs /home/mastodon/.nodejs
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.yarn   /home/mastodon/.yarn
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.path   /home/mastodon/.path
+RUN set -xe rm -rf /home/mastodon/live/node_modules/@clusterws/cws/dist
+COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/cWS/dist /home/mastodon/live/node_modules/@clusterws/cws/dist
+
 ARG MASTODON_VERSION
+USER mastodon
 RUN set -xe && \
 	eval "$(cat $HOME/.prerun)" && cd && \
 	git clone https://github.com/tootsuite/mastodon.git live && cd live && \
@@ -111,12 +115,11 @@ RUN set -xe && \
 	eval "$(cat $HOME/.prerun)" && cd && \
 	export RAILS_ENV="production" && \
 	export NODE_ENV="production" && \
+	export RAILS_SERVE_STATIC_FILES="true" && \
+	export BIND="0.0.0.0" && \
 	cd /home/mastodon/live && \
 	OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder bundle exec rails assets:precompile && \
 	yarn cache clean
-
-RUN set -xe rm -rf /home/mastodon/live/node_modules/@clusterws/cws/dist
-COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/cWS/dist /home/mastodon/live/node_modules/@clusterws/cws/dist
 
 ADD entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]

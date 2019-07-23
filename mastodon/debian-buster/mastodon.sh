@@ -4,6 +4,8 @@ set -eu
 do_web() {
 	export RAILS_ENV=production
 	export PORT=3000
+	export RAILS_SERVE_STATIC_FILES="true"
+	export BIND="0.0.0.0"
 	cd $BASEDIR/live
 	exec bundle exec puma -C config/puma.rb
 }

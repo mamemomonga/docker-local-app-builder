@@ -32,7 +32,7 @@ do_install() {
 		exit 1
 	fi
 	exec docker run --rm $IMAGE_NAME fetch | ssh mastodon@$dest tar xpC /home/mastodon
-	scp $BASEDIR/mastodon.sh mastodon@$dest /home/mastodon/mastodon.sh
+	scp $BASEDIR/mastodon.sh mastodon@$dest:/home/mastodon/mastodon.sh
 }
 
 do_uninstall() {
