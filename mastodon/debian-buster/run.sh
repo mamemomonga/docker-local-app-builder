@@ -24,7 +24,7 @@ do_fetch() {
 	exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" > var/$APP_NAME-$MASTODON_VERSION-$OS-$ARCH.tar
 }
 
-do_setup() {
+do_install() {
 	local dest="${1:-}"
 	if [ -z "$dest" ]; then
 		echo "USAGE: setup user@host"
@@ -33,11 +33,11 @@ do_setup() {
 	exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" | ssh $dest tar xvpC /home/mastodon
 }
 
-do_shell() {
-	exec docker run --rm -it $IMAGE_NAME sh
+do_bash() {
+	exec docker run --rm -it $IMAGE_NAME bash
 }
 
-COMMANDS="build push pull fetch setup shell"
+COMMANDS="build push pull fetch install bash"
 
 run() {
     for i in $COMMANDS; do

@@ -1,0 +1,1 @@
+export PATH="$(find $HOME/.path -type f | sort | xargs perl -E '@c=reverse <>; say join(":",map { chomp;$_ } @c)')"
