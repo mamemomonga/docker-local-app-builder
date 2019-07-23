@@ -21,23 +21,34 @@ do_pull() {
 }
 
 do_fetch() {
-	exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" > var/$APP_NAME-$MASTODON_VERSION-$OS-$ARCH.tar
+	mkdir -p var
+	exec docker run --rm $IMAGE_NAME fetch > var/$APP_NAME-$MASTODON_VERSION-$OS-$ARCH.tar
 }
 
 do_install() {
 	local dest="${1:-}"
 	if [ -z "$dest" ]; then
-		echo "USAGE: setup user@host"
+		echo "USAGE: host"
 		exit 1
 	fi
-	exec docker run --rm $IMAGE_NAME cat "/$APP_NAME.tar" | ssh $dest tar xvpC /home/mastodon
+	exec docker run --rm $IMAGE_NAME fetch | ssh mastodon@$dest tar xpC /home/mastodon
+	scp $BASEDIR/mastodon.sh mastodon@$dest /home/mastodon/mastodon.sh
+}
+
+do_uninstall() {
+	local dest="${1:-}"
+	if [ -z "$dest" ]; then
+		echo "USAGE: host"
+		exit 1
+	fi
+	ssh mastodon@$dest sh -c 'cd; rm -rf .bundle .cache .nodejs .path .prerun .ruby .yarn live'
 }
 
 do_bash() {
 	exec docker run --rm -it $IMAGE_NAME bash
 }
 
-COMMANDS="build push pull fetch install bash"
+COMMANDS="build push pull fetch install uninstall bash"
 
 run() {
     for i in $COMMANDS; do
