@@ -106,4 +106,5 @@
 	EOS
 
 	[root@target] systemctl daemon-reload
-	[root@target] for i in web sidekiq streaming; do systemctl enable $i; systemctl start $i; systemctl status $i; done
+	[root@target] for i in web sidekiq streaming; do systemctl enable mastodon-$i; systemctl start mastodon-$i; systemctl status mastodon-$i; done
+
