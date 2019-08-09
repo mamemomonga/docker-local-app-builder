@@ -100,8 +100,6 @@ COPY --from=ruby   --chown=mastodon:mastodon /home/mastodon/.path   /home/mastod
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.nodejs /home/mastodon/.nodejs
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.yarn   /home/mastodon/.yarn
 COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/.path   /home/mastodon/.path
-RUN set -xe rm -rf /home/mastodon/live/node_modules/@clusterws/cws/dist
-COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/cWS/dist /home/mastodon/live/node_modules/@clusterws/cws/dist
 
 ARG MASTODON_VERSION
 USER mastodon
@@ -120,6 +118,9 @@ RUN set -xe && \
 	cd /home/mastodon/live && \
 	OTP_SECRET=precompile_placeholder SECRET_KEY_BASE=precompile_placeholder bundle exec rails assets:precompile && \
 	yarn cache clean
+
+RUN set -xe rm -rf /home/mastodon/live/node_modules/@clusterws/cws/dist
+COPY --from=nodejs --chown=mastodon:mastodon /home/mastodon/cWS/dist /home/mastodon/live/node_modules/@clusterws/cws/dist
 
 ADD entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
